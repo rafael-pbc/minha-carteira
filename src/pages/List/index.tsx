@@ -9,6 +9,7 @@ import gains from "../../repositories/gains";
 import expenses from "../../repositories/expenses";
 import formatCurrency from "../../utils/formatCurrency";
 import formatDate from "../../utils/formatDate";
+import listOfMonths from "../../utils/months";
 
 import { Container, Content, Filters } from "./styles";
 
@@ -25,7 +26,7 @@ const List: React.FC = () => {
 
     const [data, setData] = useState<IData[]>([]);
     const [monthSelected, setMonthSelected] = useState<string>(String(new Date().getMonth() + 1));
-    const [yearSelected, setYearSelected] = useState<string>(String(new Date().getFullYear));
+    const [yearSelected, setYearSelected] = useState<string>('2020');
 
     const { type } = useParams();
 
@@ -41,17 +42,39 @@ const List: React.FC = () => {
         return type === 'entry-balance' ? gains : expenses;
     }, [type]);
 
-    const months = [
-        { value: 7, label: 'Julho' },
-        { value: 8, label: 'Agosto' },
-        { value: 9, label: 'Setembro' }
-    ];
 
-    const years = [
-        { value: 2020, label: 2020 },
-        { value: 2019, label: 2019 },
-        { value: 2018, label: 2018 }
-    ];
+    const years = useMemo(()=>{
+        let uniqueYers: number[] = [];
+
+        listData.forEach(item =>{
+            const date = new Date(item.date);
+            const year = date.getFullYear();
+
+            if(!uniqueYers.includes(year)){
+                uniqueYers.push(year);
+            }
+        });
+
+        return uniqueYers.map(year =>{
+            return{
+                value: year,
+                label: year
+            }
+        });
+
+    },[listData])
+
+    const months = useMemo(()=>{
+       
+        return listOfMonths.map((month, index)=>{
+            return{
+                value: index + 1,
+                label: month,
+            }
+        });
+        
+
+    },[])
 
     useEffect(() => {
         const filteredData = listData.filter(item => {
@@ -61,9 +84,9 @@ const List: React.FC = () => {
             return month === monthSelected && year === yearSelected;
         });
 
-        const formattedData = filteredData.map(item => {
+        const formattedData = filteredData.map((item, index) => {
             return {
-                id: String(new Date().getTime() + item.amount),
+                id: String(index),
                 description: item.description,
                 amountFormatted: formatCurrency(Number(item.amount)),
                 frequency: item.frequency,

@@ -1,22 +1,40 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import ContentHeader from "../../components/ContentHeader";
 import SelectInput from "../../components/SelectInput";
 import HistoryFinanceCard from "../../components/HistoryFinanceCard";
 
+import gains from "../../repositories/gains";
+import expenses from "../../repositories/expenses";
+
 import { Container, Content, Filters } from "./styles";
 
+interface IData {
+    id: string;
+    description: string;
+    amountFormatted: string;
+    frequency: string;
+    dateFormatted: string;
+    tagColor: string;
+}
+
 const List: React.FC = () => {
- 
+
+    const [data, setData] = useState<IData[]>([]);
+
     const { type } = useParams();
 
-    const title = useMemo(() =>{
+    const title = useMemo(() => {
         return type === 'entry-balance' ? 'Entradas' : 'Saídas';
     }, [type]);
 
-    const lineColor = useMemo(() =>{
-        return type === 'entry-balance' ? '#F7931B' :  '#E44C4E';
+    const lineColor = useMemo(() => {
+        return type === 'entry-balance' ? '#F7931B' : '#E44C4E';
+    }, [type]);
+
+    const listData = useMemo(() => {
+        return type === 'entry-balance' ? gains : expenses;
     }, [type]);
 
     const months = [
@@ -26,10 +44,24 @@ const List: React.FC = () => {
     ];
 
     const years = [
-        { value:2023, label: 2023 },
-        { value:2022, label: 2022 },
-        { value:2021, label: 2021 }
+        { value: 2023, label: 2023 },
+        { value: 2022, label: 2022 },
+        { value: 2021, label: 2021 }
     ];
+
+    useEffect(() => {
+        const response = listData.map(item => {
+            return {
+                id: String(Math.random() * data.length),
+                description: item.description,
+                amountFormatted: item.amount,
+                frequency: item.frequency,
+                dateFormatted: item.date,
+                tagColor: item.frequency === 'recorrente' ? '#4E41F0' : '#E44C4E'
+            }
+        })
+        setData(response)
+    }, []);
 
     return (
         <Container>
@@ -48,12 +80,17 @@ const List: React.FC = () => {
             </Filters>
 
             <Content>
-                <HistoryFinanceCard
-                    tagColor="#E44C4E"
-                    title="Conta de Luz"
-                    subtitle="17/05/2024"
-                    amount="R$ 130,00"
-                />
+                {
+                    data.map(item => (
+                        <HistoryFinanceCard
+                            key={item.id}
+                            tagColor={item.tagColor}
+                            title={item.description}
+                            subtitle={item.dateFormatted}
+                            amount={item.amountFormatted}
+                        />
+                    ))
+                }
             </Content>
         </Container>
     )

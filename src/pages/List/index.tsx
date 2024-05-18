@@ -25,23 +25,23 @@ interface IData {
 const List: React.FC = () => {
 
     const [data, setData] = useState<IData[]>([]);
-    const [monthSelected, setMonthSelected] = useState<string>(String(new Date().getMonth() + 1));
-    const [yearSelected, setYearSelected] = useState<string>('2020');
+    const [monthSelected, setMonthSelected] = useState<number>(new Date().getMonth() + 1);
+    const [yearSelected, setYearSelected] = useState<number>(2020);
     const [frequencyFilterSelected, setFrequencyFilterSelected] = useState(['recorrente', 'eventual']);
 
     const { movimentType } = useParams();
 
-    const pageData = useMemo(()=>{
+    const pageData = useMemo(() => {
         return movimentType === 'entry-balance' ?
-             {
+            {
                 title: 'Entradas',
-                lineColor:  '#F7931B',
+                lineColor: '#F7931B',
                 data: gains
-             }
+            }
             :
-             {
+            {
                 title: 'Saídas',
-                lineColor:  '##E44C4E',
+                lineColor: '##E44C4E',
                 data: expenses
             }
     }, [movimentType]);
@@ -93,13 +93,31 @@ const List: React.FC = () => {
         }
     };
 
+    const handleMonthSelected = (month: string) => {
+        try {
+            const parseMonth = Number(month);
+            setMonthSelected(parseMonth);
+        } catch (error) {
+            throw new Error('Invalid month value. Is acept 0 - 24.');
+        }
+    };
+
+    const handleYearSelected = (month: string) => {
+        try {
+            const parseYear = Number(month);
+            setYearSelected(parseYear);
+        } catch (error) {
+            throw new Error('Invalid year value. Is acept numbers.');
+        }
+    };
+
     useEffect(() => {
         const { data } = pageData;
 
         const filteredData = data.filter(item => {
             const date = new Date(item.date);
-            const month = String(date.getMonth() + 1);
-            const year = String(date.getFullYear());
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
             return month === monthSelected && year === yearSelected && frequencyFilterSelected.includes(item.frequency);
         });
 
@@ -120,17 +138,17 @@ const List: React.FC = () => {
     return (
         <Container>
             <ContentHeader title={pageData.title} lineColor={pageData.lineColor}>
-                <SelectInput 
-                    options={months} 
-                    onChange={(e) => setMonthSelected(e.target.value)} 
-                    defaultValue={monthSelected} 
+                <SelectInput
+                    options={months}
+                    onChange={(e) => handleMonthSelected(e.target.value)}
+                    defaultValue={monthSelected}
                 />
 
-                <SelectInput 
-                    options={years} 
-                    onChange={(e) => setYearSelected(e.target.value)} 
+                <SelectInput
+                    options={years}
+                    onChange={(e) => handleYearSelected(e.target.value)}
                     defaultValue={yearSelected}
-                 />
+                />
             </ContentHeader>
 
             <Filters>

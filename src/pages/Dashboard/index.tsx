@@ -5,6 +5,7 @@ import SelectInput from "../../components/SelectInput";
 import WalletBox from "../../components/WalletBox";
 import MessageBox from "../../components/MessageBox";
 import PieChartBox from "../../components/PieChartBox";
+import HistoryBox from "../../components/HistoryBox";
 
 import expenses from "../../repositories/expenses";
 import gains from "../../repositories/gains";
@@ -79,7 +80,7 @@ const Dashboard: React.FC = () => {
 
         gains.forEach(item => {
             const date = new Date(item.date);
-            const year = date.getFullYear();
+            const year = 2020;
             const month = date.getMonth() + 1;
 
             if (month === monthSelected && year === yearSelected) {
@@ -145,6 +146,56 @@ const Dashboard: React.FC = () => {
         return data;
     }, [totalGains, totalExpenses]);
 
+    const historyData = useMemo(() => {
+        return listOfMonths.map((_, month ) =>{
+
+            let amountEntry = 0;
+
+            gains.forEach(gain =>{
+                const date = new Date(gain.date);
+                const gainMonth = date.getMonth();
+                const gainYear = 2020;
+
+                if(gainMonth === month && gainYear === yearSelected){
+                    try {
+                        amountEntry += Number(gain.amount)
+                    } catch  {
+                        throw new Error('amountEntry is invalid. amountEntry must be valid number.')
+                    }
+                }
+            });
+
+            let amountOutput = 0;
+
+            expenses.forEach( gain =>{
+                const date = new Date(gain.date);
+                const gainMonth = date.getMonth();
+                const gainYear = 2020;
+
+                if(gainMonth === month && gainYear === yearSelected){
+                    try {
+                        amountOutput += Number(gain.amount)
+                    } catch  {
+                        throw new Error('amounntOutput is invalid. amounntOutput must be valid number.')
+                    }
+                }
+            });
+
+            return {
+                monthNumber: month,
+                month: listOfMonths[month].substr(0, 3),
+                amountEntry,
+                amountOutput,
+            }
+        }).filter(item =>{
+            const currentMonth = new Date().getMonth();
+            const currentYear = 2020;
+
+            return (yearSelected === currentYear && item.monthNumber <= currentMonth)
+            || (yearSelected < currentYear) || (yearSelected > currentYear)
+        });
+
+    }, [yearSelected]);
 
     const handleMonthSelected = (month: string) => {
         try {
@@ -213,6 +264,11 @@ const Dashboard: React.FC = () => {
                 />
 
                 <PieChartBox data={relationExpensesVersusGains}/>
+                <HistoryBox 
+                    data={historyData}
+                    lineColorAmountEntry="#F7931B"
+                    lineColorAmountOutput="#E44C4E"
+                />
             </Content>
         </Container>
     )

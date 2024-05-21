@@ -8,6 +8,8 @@ import {
     Tooltip,
  } from 'recharts'
 
+import formatCurrency from "../../utils/formatCurrency";
+
 import { Container, ChartContainer, Header, LegendContainer, Legend } from './styles'
 
 interface IHistoryBoxProps{
@@ -34,12 +36,12 @@ const HistoryBox: React.FC<IHistoryBoxProps> = ({
 
             <LegendContainer>
                 <Legend color={lineColorAmountEntry}>
-                    <div>{}</div>
+                    <div></div>
                     <span>Entradas</span>
                 </Legend>
            
                 <Legend color={lineColorAmountOutput}>
-                    <div>{}</div>
+                    <div></div>
                     <span>Saídas</span>
                 </Legend>
             </LegendContainer>
@@ -50,7 +52,7 @@ const HistoryBox: React.FC<IHistoryBoxProps> = ({
                 <LineChart data={data} >
                     <CartesianGrid strokeDasharray="3 3" stroke="#CECECE"/>
                     <XAxis dataKey="month" stroke="#CECECE"/>
-                    <Tooltip/>
+                    <Tooltip formatter={(value) => formatCurrency(Number(value))}/>
                     <Line 
                         type="monotone" 
                         dataKey="amountEntry"

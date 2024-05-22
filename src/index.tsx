@@ -1,12 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+
+import { ThemeProvider } from './hooks/theme';
 import App from './App'
+import dark from './styles/themes/dark';
 
 const root = ReactDOM.createRoot(
    document.getElementById('root') as HTMLElement
 );
 root.render(
    <React.StrictMode>
-      <App />
+      <ThemeProvider theme={dark} toggleTheme={()=>{}}>
+         <App />
+      </ThemeProvider>
    </React.StrictMode>
 );

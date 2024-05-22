@@ -2,7 +2,7 @@ import React from "react";
 
 import { Container } from './styles'
 
-interface IMessageBoxProps{
+interface IMessageBoxProps {
     title: string;
     description: string;
     footerText: string;
@@ -14,21 +14,19 @@ const MessageBox: React.FC<IMessageBoxProps> = ({
     description,
     footerText,
     icon,
-}) => {
-   return (
-      <Container>
-         <header>
+}) => (
+    <Container>
+        <header>
             <h1>
                 {title}
-                <img src={icon} alt={title}/>
+                <img src={icon} alt={title} />
             </h1>
             <p>{description}</p>
             <footer>
                 <span>{footerText}</span>
             </footer>
-         </header>
-      </Container>
-   );
-}
+        </header>
+    </Container>
+);
 
 export default MessageBox;

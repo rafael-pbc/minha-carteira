@@ -1,12 +1,17 @@
 import React from "react";
-import { MdDashboard, MdArrowDownward, MdArrowUpward, MdExitToApp} from 'react-icons/md'
+import { MdDashboard, MdArrowDownward, MdArrowUpward, MdExitToApp} from 'react-icons/md';
 
-import logoImg from '../../assets/logo.svg'
+import logoImg from '../../assets/logo.svg';
 
-import { Container, Header, LogImg, MenuContainer, Title } from './styles'
+import { useAuth } from "../../hooks/auth";
+
+import { Container, Header, LogImg, MenuContainer, Title, MenuItemButton} from './styles';
 import { Link } from "react-router-dom";
 
 const Aside: React.FC = () => {
+
+   const { signOut } = useAuth();
+
    return (
       <Container>
          <Header>
@@ -30,10 +35,10 @@ const Aside: React.FC = () => {
                Saidas
             </Link>
 
-            <Link to="#">
+            <MenuItemButton onClick={signOut}>
             <MdExitToApp/>
                Sair
-            </Link>
+            </MenuItemButton>
          </MenuContainer>
       </Container>
    )
